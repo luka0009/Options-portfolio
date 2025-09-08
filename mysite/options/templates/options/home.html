@@ -1,0 +1,111 @@
+{% extends "options/base.html" %}
+{% block title %}Options Payoff — Builder{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="header">
+    <div>
+      <div class="title">Options Payoff</div>
+
+    </div>
+  </div>
+
+  {% if errors and request.GET %}
+  <div class="card err">
+    <ul class="errlist">
+      {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <form id="params-form" method="get" class="form" autocomplete="off">
+      <div class="group col-4">
+        <label for="name">Label (optional)</label>
+        <input type="text" id="name" name="name" value="">
+      </div>
+
+      <div class="group col-3">
+        <label for="S0">S0 (optional)</label>
+        <input type="number" step="any" id="S0" name="S0" value="{{ params.S0|default:'' }}">
+      </div>
+
+      <!-- Range -->
+      <div class="col-12 legend">Range</div>
+      <div class="fieldset col-12">
+        <div class="group col-3">
+          <label for="start">Start</label>
+          <input type="number" step="any" id="start" name="start" value="{{ params.start|default:0}}" required>
+        </div>
+        <div class="group col-3">
+          <label for="stop">Stop</label>
+          <input type="number" step="any" id="stop" name="stop" value="{{ params.stop|default:'' }}" required>
+        </div>
+        <div class="group col-3">
+          <label for="by">Step</label>
+          <input type="number" step="any" id="by" name="by" value="{{ params.by|default:'' }}" required>
+        </div>
+        <div class="group col-3">
+          <label>&nbsp;</label>
+          <div class="muted hint">S<span class="sub">T</span> domain & resolution</div>
+        </div>
+      </div>
+
+      <!-- Legs -->
+      <div class="col-12 legend">Legs</div>
+      <div id="legs-list" class="fieldset col-12"><!-- JS renders legs here --></div>
+
+      <div class="btnrow">
+        <button type="button" id="add-leg" class="btn">+ Add leg</button>
+        <button type="submit" class="btn primary">Update Chart</button>
+      </div>
+
+      <!-- Hidden field that JS fills with JSON -->
+      <input type="hidden" id="legs_json" name="legs" value="">
+    </form>
+  </div>
+
+  {% if ready %}
+  <div class="card">
+    <div class="title sm">Strategy Summary</div>
+    <div class="muted" style="margin-bottom:12px;">{{ desc_text }}</div>
+    <div class="kpi-grid">
+      <div class="group">
+        <label class="muted">Max Profit</label>
+        <div class="kpi">{{ metrics.max_profit|floatformat:2 }}</div>
+      </div>
+      <div class="group">
+        <label class="muted">Max Loss</label>
+        <div class="kpi">{{ metrics.max_loss|floatformat:2 }}</div>
+      </div>
+      <div class="group">
+        <label class="muted">Net Premium</label>
+        <div class="kpi">{{ metrics.net_premium|floatformat:2 }}</div>
+      </div>
+      <div class="group">
+        <label class="muted">Break-evens</label>
+        <div class="kpi">
+          {% if metrics.breakevens and metrics.breakevens|length %}
+          {% for b in metrics.breakevens %}{{ b|floatformat:2 }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          {% else %}—{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card chart-card">
+    <div class="chart-frame">
+      <img id="chart"
+        src="{% url 'option_payoff_png' %}?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}cb={{ cb }}"
+        alt="Options payoff">
+    </div>
+  </div>
+  {% else %}
+  <div class="card note">
+    <div class="muted">Enter range and at least the first leg, then click <b>Update Chart</b>.</div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Pass initial legs from query (if any) safely to JS -->
+<script type="application/json" id="initial-legs-json">{{ request.GET.legs|default:""|safe }}</script>
+{% endblock %}

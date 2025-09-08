@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Options{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'options/css/home.css' %}?v={{ cb }}">
+</head>
+
+<body>
+    {% block content %}{% endblock %}
+    <script src="{% static 'options/js/home.js' %}?v={{ cb }}"></script>
+</body>
+
+</html>
