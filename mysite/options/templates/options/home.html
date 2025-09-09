@@ -18,7 +18,7 @@
   {% endif %}
 
   <div class="card">
-    <form id="params-form" method="get" class="form" autocomplete="off">
+    <form id="params-form" method="get" class="form" data-json-url="{% url 'payoff_json' %}" autocomplete="off">
       <div class="group col-4">
         <label for="name">Label (optional)</label>
         <input type="text" id="name" name="name" value="">
@@ -99,6 +99,15 @@
         alt="Options payoff">
     </div>
   </div>
+  {% if ready %}
+  <!-- canvas start -->
+  <div class="card chart-card">
+    <div class="chart-frame">
+      <canvas id="payoffCanvas" height="320"></canvas>
+    </div>
+  </div>
+  <!-- canvas end -->
+  {% endif %}
   {% else %}
   <div class="card note">
     <div class="muted">Enter range and at least the first leg, then click <b>Update Chart</b>.</div>
