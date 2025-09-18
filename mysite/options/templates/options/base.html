@@ -11,9 +11,25 @@
 
 <body>
     {% block content %}{% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{% static 'options/js/home.js' %}?v={{ cb }}"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script type="importmap">
+  {
+    "imports": {
+      "app/main":  "{% static 'options/js/main.js' %}?v={{ cb }}",
+      "app/home":  "{% static 'options/js/pages/home.js' %}?v={{ cb }}",
+      "app/chart": "{% static 'options/js/chart.js' %}?v={{ cb }}",
+      "app/utils": "{% static 'options/js/utils.js' %}?v={{ cb }}",
+      "app/legs":  "{% static 'options/js/legs.js' %}?v={{ cb }}"
+    }
+  }
+  </script>
+
+    <script type="module">
+        import { bootstrapHome } from "app/home";
+        document.addEventListener("DOMContentLoaded", () => bootstrapHome());
+    </script>
 </body>
 
 </html>

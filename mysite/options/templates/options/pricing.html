@@ -4,13 +4,73 @@
 <div class="wrap">
     <div class="header">
         <div class="title">Pricing</div>
-        <div class="muted"> </div>
+        <div class="muted">OVME</div>
     </div>
 
     <div class="card">
-        <p class="muted"></p>
-        <p class="muted"></p>
-        <p class="muted"></p>
+        <form method="get" action="">
+            <div class="grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+                <label>
+                    Spot (S)
+                    <input name="spot" type="number" step="any" value="{{ spot|default_if_none:'' }}" required />
+                </label>
+                <label>
+                    Strike (K)
+                    <input name="strike" type="number" step="any" value="{{ strike|default_if_none:'' }}" required />
+                </label>
+                <label>
+                    Time to Maturity (years)
+                    <input name="ttm_years" type="number" step="any" placeholder="e.g. 0.5"
+                        value="{{ ttm_years|default_if_none:'' }}" required />
+                </label>
+                <label>
+                    Risk-free r (annual)
+                    <input name="rate" type="number" step="any" placeholder="5 or 0.05"
+                        value="{{ rate|default_if_none:'' }}" required />
+                </label>
+                <label>
+                    Dividend yield q (annual)
+                    <input name="div_yield" type="number" step="any" placeholder="0 if none"
+                        value="{{ div_yield|default_if_none:'' }}" />
+                </label>
+                <label>
+                    Volatility σ (annual)
+                    <input name="vol" type="number" step="any" placeholder="20 or 0.20"
+                        value="{{ vol|default_if_none:'' }}" required />
+                </label>
+                <label>
+                    Option Type
+                    <select name="kind">
+                        <option value="C" {% if is_call %}selected{% endif %}>Call</option>
+                        <option value="P" {% if is_put %}selected{% endif %}>Put</option>
+                    </select>
+                </label>
+            </div>
+            <div style="margin-top:12px;">
+                <button type="submit">Price Option</button>
+            </div>
+        </form>
+
+        {% if error %}
+        <p style="color:#ff6b6b;margin-top:10px;">{{ error }}</p>
+        {% endif %}
+
+        {% if price is not None %}
+        <hr />
+        <h3>Result</h3>
+        <p><strong>Price:</strong> {{ price }}</p>
+
+        {% if greeks %}
+        <div class="grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+            <div>Delta: {{ greeks.delta|floatformat:6 }}</div>
+            <div>Gamma: {{ greeks.gamma|floatformat:6 }}</div>
+            <div>Vega (per 1.00 σ): {{ greeks.vega|floatformat:6 }}</div>
+            <div>Theta (per year): {{ greeks.theta|floatformat:6 }}</div>
+            <div>Rho: {{ greeks.rho|floatformat:6 }}</div>
+        </div>
+        <p class="muted" style="margin-top:6px;"> 20% → 0.20.</p>
+        {% endif %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}
