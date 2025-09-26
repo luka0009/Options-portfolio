@@ -1,0 +1,363 @@
+:root {
+    --bg: #0b1220;
+    --panel: #111827;
+    --panel-2: #0f172a;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #60a5fa;
+    --accent-2: #34d399;
+    --border: #1f2937;
+    --danger: #f87171;
+    --radius: 14px;
+    --shadow: 0 10px 25px rgba(0, 0, 0, .35);
+    color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg: #f3f4f6;
+        --panel: #fff;
+        --panel-2: #f9fafb;
+        --text: #111827;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --shadow: 0 8px 24px rgba(0, 0, 0, .08);
+    }
+}
+
+html,
+body {
+    height: 100%
+}
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background:
+        radial-gradient(1000px 600px at 80% -10%, rgba(96, 165, 250, .18), transparent 60%),
+        radial-gradient(900px 580px at 0% -20%, rgba(52, 211, 153, .16), transparent 60%),
+        var(--bg);
+    color: var(--text);
+}
+
+.wrap {
+    max-width: 1100px;
+    margin: 48px auto;
+    padding: 0 20px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.title {
+    font-weight: 700;
+    letter-spacing: .2px;
+    font-size: clamp(22px, 2.2vw, 30px);
+}
+
+.title.sm {
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.muted {
+    color: var(--muted)
+}
+
+.card {
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 18px 35px;
+    margin-bottom: 18px;
+}
+
+.chart-card {
+    padding: 30px 0px;
+    display: flex;
+    justify-content: center;
+}
+
+.chart-frame {
+    width: 90%;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #002b36;
+    box-shadow: var(--shadow);
+}
+
+
+#chart {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+}
+
+#payoffCanvas {
+    display: block;
+    width: 100%;
+    height: 500px;
+    max-width: 100%;
+}
+
+.err {
+    border-color: #b91c1c;
+}
+
+.card.err {
+    border-color: #b91c1c;
+    background: linear-gradient(180deg, #1b0f12, #160b0d)
+}
+
+.errlist {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.note {
+    padding: 14px 16px
+}
+
+.form {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: end;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.group label {
+    font-size: .88rem;
+    color: var(--muted)
+}
+
+.group input,
+.group select,
+.group textarea {
+    appearance: none;
+    background: rgba(255, 255, 255, .03);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s, transform .02s;
+}
+
+.group input:focus,
+.group select:focus,
+.group textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, .2);
+}
+
+.group input[type="number"] {
+    text-align: right
+}
+
+.hint {
+    font-size: .8rem
+}
+
+.col-12 {
+    grid-column: span 12;
+}
+
+.col-6 {
+    grid-column: span 6
+}
+
+.col-4 {
+    grid-column: span 4
+}
+
+.col-3 {
+    grid-column: span 3
+}
+
+.col-2 {
+    grid-column: span 2
+}
+
+@media (max-width:900px) {
+
+    .col-2,
+    .col-3 {
+        grid-column: span 4
+    }
+
+    .col-4 {
+        grid-column: span 6
+    }
+}
+
+@media (max-width:680px) {
+
+    .col-2,
+    .col-3,
+    .col-4,
+    .col-6 {
+        grid-column: span 12
+    }
+}
+
+.fieldset {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    background: rgba(255, 255, 255, .02);
+    border-radius: 12px;
+    padding: 14px;
+    border: 1px dashed var(--border);
+    margin-top: 6px;
+}
+
+.legend {
+    font-size: .86rem;
+    color: var(--muted);
+    margin-bottom: 2px
+}
+
+.btnrow {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 8px 0 4px;
+    justify-content: flex-start;
+    width: 120px
+}
+
+.btn {
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform .05s, box-shadow .15s, border-color .2s;
+}
+
+.btn:hover {
+    border-color: var(--accent)
+}
+
+.btn:active {
+    transform: translateY(1px)
+}
+
+.btn.primary {
+    background: linear-gradient(180deg, rgba(96, 165, 250, .35), rgba(96, 165, 250, .18));
+    border-color: rgba(96, 165, 250, .6);
+    width: fit-content;
+}
+
+.btn.danger {
+    border-color: #7f1d1d;
+    background: linear-gradient(180deg, rgba(248, 113, 113, .25), rgba(248, 113, 113, .10));
+}
+
+
+.chart-frame {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #002b36;
+    box-shadow: var(--shadow);
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 12px
+}
+
+.kpi-grid .group {
+    grid-column: span 3
+}
+
+.leg-row {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 12px;
+    align-items: end;
+}
+
+.leg-controls {
+    grid-column: span 12;
+    display: flex;
+    gap: 8px;
+    margin-top: 4px
+}
+
+.leg-index {
+    font-size: .86rem;
+    color: var(--muted);
+    margin-bottom: 2px
+}
+
+#legs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Each leg card */
+.leg {
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    background: rgba(255, 255, 255, .02);
+}
+
+/* Top bar inside a leg */
+.leg-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.leg-title {
+    font-size: .9rem;
+    color: var(--muted);
+}
+
+/* Inputs grid for a leg */
+.leg-grid {
+    display: grid;
+    grid-template-columns: 140px 140px 1fr 1fr 110px;
+    gap: 12px;
+}
+
+/* Make it stack on narrow screens */
+@media (max-width: 920px) {
+    .leg-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    .leg-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.group input,
+.group select,
+.group textarea {
+    background: rgba(255, 255, 255, .05);
+    /* was .03 */
+}

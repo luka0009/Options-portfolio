@@ -1,13 +1,15 @@
 from typing import Tuple, Dict, List, Any
 from django.http import HttpRequest
-from ..optionslib import OptionStrat  
+from ..optionslib import OptionStrat
+
 
 def _to_float(name: str, val: str, errors: List[str]) -> float:
     try:
         return float(val)
     except Exception:
         errors.append(f"invalid '{name}' (must be a number)")
-        return 0.0  
+        return 0.0
+
 
 def _to_int(name: str, val: str, errors: List[str]) -> int:
     try:
@@ -15,6 +17,7 @@ def _to_int(name: str, val: str, errors: List[str]) -> int:
     except Exception:
         errors.append(f"invalid '{name}' (must be an integer)")
         return 1
+
 
 def _parse_legs_from_json(raw: str, errors: List[str]) -> List[Dict[str, Any]]:
     import json
@@ -54,8 +57,8 @@ def _parse_legs_from_json(raw: str, errors: List[str]) -> List[Dict[str, Any]]:
         legs.append({"type": type_, "side": side, "K": K, "price": price, "Q": Q})
     return legs
 
-def _parse_indexed_legs(q) -> List[Dict[str, Any]]:
 
+def _parse_indexed_legs(q) -> List[Dict[str, Any]]:
     legs: List[Dict[str, Any]] = []
     for i in range(1, 21):
         t = q.get(f"l{i}_type")
@@ -73,6 +76,7 @@ def _parse_indexed_legs(q) -> List[Dict[str, Any]]:
         Q = int(q.get(f"l{i}_Q", 1))
         legs.append({"type": type_, "side": side, "K": K, "price": price, "Q": Q})
     return legs
+
 
 def parse_params(request: HttpRequest) -> Tuple[Dict[str, Any], List[str]]:
     q = request.GET
@@ -92,18 +96,18 @@ def parse_params(request: HttpRequest) -> Tuple[Dict[str, Any], List[str]]:
     start = q.get("start")
     stop = q.get("stop")
     by = q.get("by")
-    if start in (None, ""): errors.append("missing 'start'")
-    if stop  in (None, ""): errors.append("missing 'stop'")
-    if by    in (None, ""): errors.append("missing 'by'")
+    # if start in (None, ""): errors.append("missing 'start'")
+    # if stop  in (None, ""): errors.append("missing 'stop'")
+    # if by    in (None, ""): errors.append("missing 'by'")
 
     start_v = _to_float("start", start, errors) if start not in (None, "") else 0.0
-    stop_v  = _to_float("stop", stop, errors)   if stop  not in (None, "") else 0.0
-    by_v    = _to_float("by", by, errors)       if by    not in (None, "") else 1.0
+    stop_v = _to_float("stop", stop, errors) if stop not in (None, "") else 0.0
+    by_v = _to_float("by", by, errors) if by not in (None, "") else 1.0
 
-    if by_v <= 0:
-        errors.append("'by' must be > 0")
-    if stop_v <= start_v:
-        errors.append("'stop' must be > 'start'")
+    # if by_v <= 0:
+    #     errors.append("'by' must be > 0")
+    # if stop_v <= start_v:
+    #     errors.append("'stop' must be > 'start'")
 
     legs: List[Dict[str, Any]] = []
     raw_legs = q.get("legs")
@@ -113,14 +117,15 @@ def parse_params(request: HttpRequest) -> Tuple[Dict[str, Any], List[str]]:
         legs = _parse_indexed_legs(q)
 
     params = {
-        "name": name,                 # may be ""
+        "name": name,  # may be ""
         "S0": S0 if S0 is not None else 0.0,  # neutral placeholder for title (no preset/default behavior)
         "start": start_v,
         "stop": stop_v,
         "by": by_v,
-        "legs": legs,                 # may be empty (zero line)
+        "legs": legs,  # may be empty (zero line)
     }
     return params, errors
+
 
 def build_strategy_from_params(p: Dict[str, Any]) -> OptionStrat:
     strat = OptionStrat(
@@ -131,7 +136,11 @@ def build_strategy_from_params(p: Dict[str, Any]) -> OptionStrat:
     # Add each leg
     for leg in p["legs"]:
         if leg["type"] == "call":
-            (strat.long_call if leg["side"] == 1 else strat.short_call)(leg["K"], leg["price"], leg.get("Q", 1))
+            (strat.long_call if leg["side"] == 1 else strat.short_call)(
+                leg["K"], leg["price"], leg.get("Q", 1)
+            )
         elif leg["type"] == "put":
-            (strat.long_put  if leg["side"] == 1 else strat.short_put )(leg["K"], leg["price"], leg.get("Q", 1))
+            (strat.long_put if leg["side"] == 1 else strat.short_put)(
+                leg["K"], leg["price"], leg.get("Q", 1)
+            )
     return strat

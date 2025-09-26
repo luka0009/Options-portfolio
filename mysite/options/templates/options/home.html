@@ -92,6 +92,14 @@
     </div>
   </div>
 
+  {% if ready %}
+    <div class="card chart-card">
+      <div class="chart-frame">
+        <canvas id="payoffCanvas" height="320"></canvas>
+      </div>
+    </div>
+  {% endif %}
+
   <div class="card chart-card">
     <div class="chart-frame">
       <img id="chart"
@@ -99,15 +107,7 @@
         alt="Options payoff">
     </div>
   </div>
-  {% if ready %}
-  <!-- canvas start -->
-  <div class="card chart-card">
-    <div class="chart-frame">
-      <canvas id="payoffCanvas" height="320"></canvas>
-    </div>
-  </div>
-  <!-- canvas end -->
-  {% endif %}
+
   {% else %}
   <div class="card note">
     <div class="muted">Enter range and at least the first leg, then click <b>Update Chart</b>.</div>

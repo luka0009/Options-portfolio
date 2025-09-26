@@ -1,5 +1,12 @@
 {% extends "options/base.html" %}
+{% load static %}
+
 {% block title %}Pricing{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'options/css/pricing.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="wrap">
     <div class="header">
@@ -8,69 +15,126 @@
     </div>
 
     <div class="card">
-        <form method="get" action="">
-            <div class="grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
-                <label>
-                    Spot (S)
-                    <input name="spot" type="number" step="any" value="{{ spot|default_if_none:'' }}" required />
-                </label>
-                <label>
-                    Strike (K)
-                    <input name="strike" type="number" step="any" value="{{ strike|default_if_none:'' }}" required />
-                </label>
-                <label>
-                    Time to Maturity (years)
-                    <input name="ttm_years" type="number" step="any" placeholder="e.g. 0.5"
-                        value="{{ ttm_years|default_if_none:'' }}" required />
-                </label>
-                <label>
-                    Risk-free r (annual)
-                    <input name="rate" type="number" step="any" placeholder="5 or 0.05"
-                        value="{{ rate|default_if_none:'' }}" required />
-                </label>
-                <label>
-                    Dividend yield q (annual)
-                    <input name="div_yield" type="number" step="any" placeholder="0 if none"
-                        value="{{ div_yield|default_if_none:'' }}" />
-                </label>
-                <label>
-                    Volatility σ (annual)
-                    <input name="vol" type="number" step="any" placeholder="20 or 0.20"
-                        value="{{ vol|default_if_none:'' }}" required />
-                </label>
-                <label>
-                    Option Type
-                    <select name="kind">
-                        <option value="C" {% if is_call %}selected{% endif %}>Call</option>
-                        <option value="P" {% if is_put %}selected{% endif %}>Put</option>
-                    </select>
-                </label>
+        <form method="post" class="form">
+            {% csrf_token %}
+            <div class="group col-6">
+                <label>Spot (S)</label>
+                <input type="number" step="any" name="spot" value="{{ spot|default:'' }}" required>
             </div>
-            <div style="margin-top:12px;">
-                <button type="submit">Price Option</button>
+            <div class="group col-6">
+                <label>Strike (K)</label>
+                <input type="number" step="any" name="strike" value="{{ strike|default:'' }}" required>
             </div>
-        </form>
 
-        {% if error %}
-        <p style="color:#ff6b6b;margin-top:10px;">{{ error }}</p>
-        {% endif %}
+            <div class="group col-4">
+                <label>Volatility (σ)</label>
+                <input type="number" step="any" name="vol" placeholder="e.g., 20 for 20%"
+                    value="{{ vol|default:'20.0' }}" required>
+            </div>
+            <div class="group col-4">
+                <label>Risk‑free rate (r)</label>
+                <input type="number" step="any" name="rate" placeholder="optional, e.g., 5 for 5%"
+                    value="{{ rate|default:'2.0' }}">
+            </div>
+            <div class="group col-4">
+                <label>Dividend yield (q)</label>
+                <input type="number" step="any" name="div_yield" placeholder="optional, e.g., 2 for 2%"
+                    value="{{ div_yield|default:'' }}">
+            </div>
 
-        {% if price is not None %}
-        <hr />
-        <h3>Result</h3>
-        <p><strong>Price:</strong> {{ price }}</p>
+            <div class="group col-6">
+                <label>Days to expiry</label>
+                <input type="number" step="1" min="0" name="days_to_expiry" placeholder="e.g., 30"
+                    value="{{ days_to_expiry|default:'' }}">
+            </div>
+            <div class="group col-6">
+                <label>Expiry date</label>
+                <input type="date" name="expiry_date" value="{{ expiry_date|default:'' }}">
+            </div>
 
-        {% if greeks %}
-        <div class="grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
-            <div>Delta: {{ greeks.delta|floatformat:6 }}</div>
-            <div>Gamma: {{ greeks.gamma|floatformat:6 }}</div>
-            <div>Vega (per 1.00 σ): {{ greeks.vega|floatformat:6 }}</div>
-            <div>Theta (per year): {{ greeks.theta|floatformat:6 }}</div>
-            <div>Rho: {{ greeks.rho|floatformat:6 }}</div>
-        </div>
-        <p class="muted" style="margin-top:6px;"> 20% → 0.20.</p>
-        {% endif %}
-        {% endif %}
+            <div class="col-12">
+                <p class="muted hint" style="margin-top: -8px;">Provide either days to expiry or an expiry date. Days to
+                    expiry takes precedence.</p>
+            </div>
+
+            <div class="group col-12">
+                <label>Kind</label>
+                <div class="btn-group">
+                    <label class="btn">
+                        <input type="radio" name="kind" value="call" {% if kind == "call" or not kind %}checked{% endif %}
+                            required>
+                        Call
+                    </label>
+                    <label class="btn">
+                        <input type="radio" name="kind" value="put" {% if kind == "put" %}checked{% endif %}>
+                        Put
+                    </label>
+                </div>
+            </div>
     </div>
+
+    <div class="group col-12">
+        <button type="submit" class="btn primary">Price</button>
+    </div>
+    </form>
+</div>
+
+{% if error %}
+<div class="card err">
+    <p class="error">{{ error }}</p>
+</div>
+{% endif %}
+
+{% if price %}
+<div class="card">
+    <h3>Results</h3>
+    <div class="kpi-grid">
+        <div class="group">
+            <label>{% if kind == "put" %}Put{% else %}Call{% endif %} option price:</label>
+            <div class="kpi">{{ price }}</div>
+        </div>
+        <div class="group">
+            <label>T (years)</label>
+            <div class="kpi">{{ t_years }}</div>
+        </div>
+    </div>
+
+    <h4>Inputs normalized:</h4>
+    <ul>
+        <li>σ = {{ vol_fmt }}</li>
+        <li>r = {{ rate_fmt }}</li>
+        <li>q = {{ div_fmt }}</li>
+    </ul>
+
+    <h4>Greeks:</h4>
+    <div class="kpi-grid">
+        {% for greek, val in greeks.items %}
+        <div class="group">
+            <label>{{ greek }}</label>
+            <div class="kpi">{{ val }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{{ greeks|json_script:"greeks-data" }}
+<script>
+    // Check if greeks were embedded and log them
+    const el = document.getElementById('greeks-data');
+    if (el) {
+      try {
+        const greeks = JSON.parse(el.textContent);
+        console.log('Greeks from backend:', greeks);
+        // Optional: sanity check a few keys
+        ['delta','gamma','vega','theta','rho'].forEach(k => {
+          if (k in greeks) console.log(k, greeks[k]);
+        });
+      } catch (e) {
+        console.error('Failed to parse greeks JSON:', e);
+      }
+    } else {
+      console.warn('No greeks JSON found in DOM.');
+    }
+  </script>
+{% endif %}
 </div>
 {% endblock %}

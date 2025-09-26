@@ -14,7 +14,7 @@ def home(request):
     }
     if not errors and request.GET:
         strat = build_strategy_from_params(params)
-        ctx["metrics"] = strat.metrics()
+        ctx["metrics"] =   strat.metrics()
         ctx["desc_text"] = strat.describe_text()
         ctx["ready"] = True
     return render(request, "options/home.html", ctx)

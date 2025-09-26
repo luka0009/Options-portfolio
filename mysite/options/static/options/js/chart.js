@@ -51,7 +51,7 @@ export function drawCanvasChart(ctx, data) {
       plugins: {
         title: {
           display: true,
-          text: 'Payoff Diagram',
+          text: `Payoff Diagram ${data.name ? `: ${data.name}` : ''}`,
           padding: {
             top: 10,
             bottom: 20
