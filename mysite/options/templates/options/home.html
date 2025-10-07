@@ -38,7 +38,7 @@
         </div>
         <div class="group col-3">
           <label for="stop">Stop</label>
-          <input type="number" step="any" id="stop" name="stop" value="{{ params.stop|default:'' }}" required>
+          <input type="number" step="any" id="stop" name="stop" value="{{ params.stop|default:1 }}" required>
         </div>
         <div class="group col-3">
           <label for="by">Step</label>
@@ -115,6 +115,19 @@
   {% endif %}
 </div>
 
-<!-- Pass initial legs from query (if any) safely to JS -->
+<!-- <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const stopInput = document.getElementById('stop');
+    const s0 = parseFloat('{{ params.S0|default:params.S0|default:"" }}');
+    let stop = parseFloat(stopInput.value);
+
+    // If stop is NaN or less than S0, set it to S0 * 1.7
+    if ((isNaN(stop) || isNaN(s0) || stop < s0) && !isNaN(s0)) {
+      stopInput.value = (s0 * 2).toFixed(2);
+    }
+
+    console.log("S0:", s0, "Stop (final):", stopInput.value);
+  });
+</script> -->
 <script type="application/json" id="initial-legs-json">{{ request.GET.legs|default:""|safe }}</script>
 {% endblock %}

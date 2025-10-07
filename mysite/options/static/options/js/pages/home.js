@@ -24,10 +24,26 @@ export function bootstrapHome() {
             const stop = Number(qs("#stop")?.value);
             const by = Number(qs("#by")?.value);
 
-            if (!(stop > start) || !(by > 0)) {
+            const stopEl = qs("#stop");
+            let effectiveStop = Number(stopEl?.value);
+
+            const biggestK = state.legs
+                .map(l => Number(l.K))
+                .filter(Number.isFinite)
+                .reduce((max, n) => Math.max(max, n), -Infinity);
+
+            if (Number.isFinite(biggestK) && biggestK !== -Infinity) {
+                const mustExceed = biggestK * 1.3;
+                if (!(effectiveStop > 0 && effectiveStop > mustExceed)) {
+                    effectiveStop = biggestK * 1.7;
+                    if (stopEl) stopEl.value = String(effectiveStop);
+                }
+            }
+
+            if (!(by > 0)) {
                 e.preventDefault();
-                alert("Please ensure: start < stop and step > 0");
-                return;
+                alert("Please ensure: step > 0");
+                return; 1
             }
             const first = state.legs[0];
             const firstOk = first && first.type && first.side &&
@@ -39,7 +55,6 @@ export function bootstrapHome() {
             }
 
             serializeLegsToHidden(state);
-
         });
     }
 

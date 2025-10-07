@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 
 
 def plot_payoff(obj, **params):
-    """obj is an OptionStrat with .STs and .payoffs; returns a Figure."""
     fig, ax = plt.subplots(figsize=(7, 4))
     fig.patch.set_facecolor('#002b36')
     ax.set_facecolor('#002b36')
